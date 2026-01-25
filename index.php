@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kasir Yakult - API QRIS (Fixed)</title>
+    <title>Kasir Yakult - PHP Version</title>
     <style>
         :root { --primary: #0056b3; --danger: #c82333; --success: #218838; --bg: #f4f6f9; }
         body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: var(--bg); margin: 0; padding-bottom: 250px; -webkit-font-smoothing: antialiased; }
@@ -12,23 +12,13 @@
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 15px; }
         .card { background: white; padding: 15px; border-radius: 20px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
         
-        /* Container Gambar Rounded */
+        /* Gambar Rounded & Cover */
         .img-container {
-            width: 100px;
-            height: 100px;
-            margin: 0 auto 10px auto;
-            border-radius: 20px; 
-            overflow: hidden; 
+            width: 100px; height: 100px; margin: 0 auto 10px auto;
+            border-radius: 20px; overflow: hidden; 
             box-shadow: 0 2px 5px rgba(0,0,0,0.05); 
         }
-        
-        /* Gambar Full Cover (Rounded) */
-        .card img { 
-            width: 100%; 
-            height: 100%; 
-            object-fit: cover; 
-            display: block;
-        }
+        .card img { width: 100%; height: 100%; object-fit: cover; display: block; }
         
         .prod-name { font-weight: bold; margin: 8px 0; font-size: 14px; color: #333; }
         .controls { display: flex; justify-content: center; gap: 10px; align-items: center; margin-top: 5px; }
@@ -38,7 +28,7 @@
         .red { background: var(--danger); }
         .blue { background: var(--primary); }
 
-        /* Footer Keranjang */
+        /* Footer */
         .cart { position: fixed; bottom: 0; left: 0; right: 0; background: white; padding: 20px; border-radius: 20px 20px 0 0; box-shadow: 0 -4px 20px rgba(0,0,0,0.1); z-index: 90; }
         .cart-item { display: flex; justify-content: space-between; border-bottom: 1px dashed #eee; padding: 8px 0; font-size: 14px; color: #333; }
         .total-box { font-weight: 800; text-align: right; margin: 15px 0; font-size: 16px; color: #000; }
@@ -57,7 +47,7 @@
         .loading-spinner { border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin-bottom: 10px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* Rincian Harga */
+        /* Rincian */
         .detail-box { background: #f8f9fa; border-radius: 10px; padding: 15px; margin: 15px 0; text-align: left; border: 1px solid #e9ecef; }
         .detail-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; color: #555; }
         .detail-total { display: flex; justify-content: space-between; margin-top: 10px; padding-top: 10px; border-top: 1px dashed #ccc; font-weight: 800; font-size: 16px; color: #000; }
@@ -65,7 +55,7 @@
         .timer { font-size: 24px; color: var(--danger); font-weight: 700; margin: 15px 0 5px 0; letter-spacing: 1px; }
         .status-text { font-style: italic; color: #666; font-size: 14px; margin-top: 5px; }
 
-        /* Animasi Sukses */
+        /* Animasi */
         .check-anim { width: 70px; height: 70px; background: var(--success); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 35px; margin: 20px auto; transform: scale(0); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .show-check { transform: scale(1); }
         .popup.success-bg { background-color: #e8f5e9; }
@@ -84,7 +74,7 @@
             <button style="background-color: #198754;" onclick="checkout('qris')">QRIS</button>
         </div>
         <div style="text-align: center; margin-top: 15px;">
-            <a href="admin11ad.html" style="font-size: 11px; color: #adb5bd; text-decoration: none;">Admin Access</a>
+            <a href="admin11ad.php" style="font-size: 11px; color: #adb5bd; text-decoration: none;">Admin Access</a>
         </div>
     </div>
 
@@ -128,13 +118,9 @@
     <script type="module">
         import { db, ref, set, push, onValue, remove } from './firebase-config.js';
 
-        // --- SOLUSI CORS: GUNAKAN PROXY ---
-        // Kita tambahkan "https://corsproxy.io/?" di depan URL API
-        const PROXY = "https://corsproxy.io/?";
-        const API_TARGET = "https://qrisku.my.id/api";
-        const API_URL = PROXY + API_TARGET;
+        // --- SOLUSI CORS: GUNAKAN PROXY PHP LOKAL ---
+        const API_URL = "proxy.php"; 
 
-        // QRIS Statis Anda
         const STATIC_QRIS = "00020101021126570011ID.DANA.WWW011893600915380003780002098000378000303UMI51440014ID.CO.QRIS.WWW0215ID10243620012490303UMI5204549953033605802ID5910Warr2 Shop6015Kab. Bandung Ba6105402936304BF4C";
 
         const products = [
@@ -199,10 +185,10 @@
             return total;
         }
 
-        // --- FETCH DENGAN PROXY ---
+        // --- FETCH KE PROXY PHP ---
         async function fetchQrisImage(amount) {
             try {
-                // Request via Proxy agar tidak kena CORS Error
+                // Request ke proxy.php (satu domain, jadi aman dari CORS)
                 const response = await fetch(API_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -211,6 +197,9 @@
                         qris_statis: STATIC_QRIS
                     })
                 });
+
+                // Cek jika proxy error (misal 404 atau 500)
+                if(!response.ok) throw new Error("Server Proxy Error");
 
                 const data = await response.json();
 
@@ -221,7 +210,7 @@
                 }
             } catch (error) {
                 console.error("API Error:", error);
-                alert("Koneksi Error: Gagal menghubungi server QRIS. Pastikan internet lancar atau coba refresh.");
+                alert("Gagal memuat QRIS. Pastikan file proxy.php ada dan berjalan di server PHP.");
                 return null;
             }
         }
@@ -234,7 +223,6 @@
             const fee = (type === 'qris') ? 200 : 0;
             const final = total + fee;
 
-            // UI Reset
             const overlay = document.getElementById('paymentOverlay');
             const qrisArea = document.getElementById('qrisArea');
             const popupInner = document.getElementById('popupInner');
@@ -254,7 +242,6 @@
                 document.getElementById('qrisLoading').style.display = 'block';
                 document.getElementById('qrisImage').style.display = 'none';
                 
-                // CALL API
                 const base64Code = await fetchQrisImage(final);
                 
                 if (base64Code) {
@@ -339,7 +326,6 @@
             document.getElementById('paymentOverlay').style.display = 'none';
             clearInterval(timerInterval);
             if(currentTxKey) {
-                // remove(ref(db, `transactions/${currentTxKey}`)); 
                 currentTxKey = null;
             }
             if(document.querySelector('.success-bg')) {
