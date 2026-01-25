@@ -149,7 +149,7 @@
                 }
             });
 
-            // Listener History (Tabel & Total)
+            // Listener History
             onValue(ref(db, 'history'), (snap) => {
                 const tb = document.querySelector('#tableHist tbody');
                 tb.innerHTML = '';
@@ -183,7 +183,6 @@
             });
         }
 
-        // Global Funcs
         window.act = (key, action) => {
             if(action === 'reject') {
                 update(ref(db, `transactions/${key}`), { status: 'rejected' });
@@ -197,7 +196,6 @@
                 document.getElementById('modalCash').style.display = 'flex';
                 document.getElementById('cTotal').innerText = `Rp${total.toLocaleString()}`;
             } else {
-                // QRIS langsung konfirmasi
                 finalize(key, 'QRIS', total, 200, 'Via QRIS Dinamis');
             }
         }
@@ -219,10 +217,8 @@
         }
 
         function finalize(key, typeLabel, total, fee, detail) {
-            // Update status user
             update(ref(db, `transactions/${key}`), { status: 'confirmed' });
             
-            // Simpan ke history
             const now = new Date();
             const pad = n => n.toString().padStart(2,'0');
             const id = `YKLT${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
@@ -230,17 +226,15 @@
             set(ref(db, `history/${id}`), {
                 id: id,
                 type: typeLabel,
-                amount: total - fee, // Harga murni produk
+                amount: total - fee, 
                 fee: fee,
                 details: detail,
                 timestamp: serverTimestamp()
             });
 
-            // Hapus request
             setTimeout(() => remove(ref(db, `transactions/${key}`)), 3000);
         }
 
-        // Expense
         window.openExp = () => document.getElementById('modalExp').style.display = 'flex';
         window.saveExp = () => {
             const note = document.getElementById('eNote').value;
