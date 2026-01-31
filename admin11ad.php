@@ -2,267 +2,242 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Admin Panel Yakult</title>
-    <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - TOKOTOPARYA</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: monospace; background: #eee; padding: 20px; }
-        .gate { position: fixed; top:0; left:0; width:100%; height:100%; background:#222; color:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:99; }
-        .code { font-size: 30px; letter-spacing: 5px; border: 1px solid #555; padding: 10px; cursor: pointer; }
+        :root {
+            --dark: #0f172a;
+            --gold: #f59e0b;
+            --sidebar: #1e293b;
+            --card: #ffffff;
+            --text: #334155;
+        }
+        body { font-family: 'Montserrat', sans-serif; background: #f1f5f9; margin: 0; display: flex; height: 100vh; overflow: hidden; }
         
-        .panel { display: none; background: white; padding: 20px; max-width: 800px; margin: 0 auto; }
-        .stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-        .box { background: #f8f9fa; padding: 15px; border: 1px solid #ddd; text-align: center; }
+        /* LOGIN GATE */
+        .login-gate { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--dark); z-index: 999; display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; }
+        .login-box { background: rgba(255,255,255,0.05); padding: 40px; border-radius: 20px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); width: 300px; text-align: center; }
+        .inp-login { width: 100%; padding: 12px; margin: 10px 0; border: none; border-radius: 8px; background: rgba(255,255,255,0.1); color: white; box-sizing: border-box; }
+        .btn-login { width: 100%; padding: 12px; background: var(--gold); border: none; border-radius: 8px; color: var(--dark); font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.3s; }
+        .btn-login:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(245, 158, 11, 0.4); }
+
+        /* DASHBOARD */
+        .sidebar { width: 250px; background: var(--sidebar); color: white; padding: 20px; display: flex; flex-direction: column; box-shadow: 5px 0 15px rgba(0,0,0,0.05); }
+        .brand { font-size: 20px; font-weight: 800; color: var(--gold); margin-bottom: 40px; letter-spacing: 1px; }
+        .menu-item { padding: 12px; margin-bottom: 5px; border-radius: 8px; cursor: pointer; color: #94a3b8; transition: 0.2s; }
+        .menu-item:hover, .menu-item.active { background: rgba(255,255,255,0.1); color: white; }
+
+        .content { flex: 1; padding: 30px; overflow-y: auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
         
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 12px; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background: #007bff; color: white; }
+        .card-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 30px; }
+        .stat-card { background: var(--card); padding: 20px; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); border-left: 4px solid var(--gold); }
+        .stat-val { font-size: 24px; font-weight: 800; color: var(--dark); margin-top: 5px; }
         
-        .incoming { background: #fff3cd; padding: 10px; margin-bottom: 10px; border: 1px solid #ffeeba; display: flex; justify-content: space-between; align-items: center; }
+        .req-card { background: white; border-radius: 16px; padding: 20px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 5px 20px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
+        .user-info { font-size: 14px; color: #64748b; }
+        .user-info b { color: var(--dark); font-size: 16px; display: block; margin-bottom: 5px; }
         
-        /* Modal Cash */
-        .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center; }
-        .m-content { background:white; padding:20px; width:300px; }
+        .act-btn { padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; margin-left: 5px; color: white; }
+        .btn-yes { background: #10b981; }
+        .btn-no { background: #ef4444; }
+        .btn-wa { background: #25D366; text-decoration: none; display: inline-block; font-size: 12px; padding: 5px 10px; border-radius: 4px; color: white; margin-top: 5px; }
+        .btn-map { background: #3b82f6; text-decoration: none; display: inline-block; font-size: 12px; padding: 5px 10px; border-radius: 4px; color: white; }
+
+        table { width: 100%; border-collapse: collapse; background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.02); font-size: 13px; }
+        th { background: #f8fafc; padding: 15px; text-align: left; color: #64748b; font-weight: 600; }
+        td { padding: 15px; border-bottom: 1px solid #f1f5f9; color: #334155; }
     </style>
 </head>
 <body>
 
-    <div class="gate" id="loginGate">
-        <h3>ADMIN VERIFICATION</h3>
-        <div class="code" id="secretCode" onclick="copyC()">?????</div>
-        <div style="margin:10px;">Klik kode untuk salin</div>
-        <input type="text" id="inputC" placeholder="Input Kode Disini">
-        <button onclick="login()">MASUK</button>
-        <div onclick="genC()" style="margin-top:20px; cursor:pointer; text-decoration:underline;">Refresh Kode</div>
+    <div class="login-gate" id="loginGate">
+        <div class="login-box">
+            <h2 style="margin-top:0;">ADMIN ACCESS</h2>
+            <input type="text" id="uName" class="inp-login" placeholder="Username">
+            <input type="password" id="uPass" class="inp-login" placeholder="Password">
+            <button class="btn-login" onclick="doLogin()">SECURE LOGIN</button>
+        </div>
     </div>
 
-    <div class="panel" id="mainPanel">
-        <h2 style="display:flex; justify-content:space-between;">
-            ADMIN YAKULT 
-            <span id="realtimeClock" style="font-size:16px;"></span>
-        </h2>
-        
-        <div class="stats">
-            <div class="box">
-                <small>Total Produk Terjual</small><br>
-                <b id="sProd">Rp0</b>
+    <div class="sidebar">
+        <div class="brand">TOKOTOPARYA</div>
+        <div class="menu-item active">Dashboard</div>
+        <div class="menu-item" onclick="wipeData()">Hapus Riwayat</div>
+        <div class="menu-item" onclick="doLogout()">Logout</div>
+    </div>
+
+    <div class="content">
+        <div class="header">
+            <h2 style="margin:0; color:var(--dark);">Dashboard Overview</h2>
+            <div style="font-size:14px; color:#64748b;" id="clock">00:00:00</div>
+        </div>
+
+        <div class="card-grid">
+            <div class="stat-card">
+                <small>Pendapatan Bersih</small>
+                <div class="stat-val" id="sInc">Rp0</div>
             </div>
-            <div class="box">
-                <small>Total Fee</small><br>
-                <b id="sFee">Rp0</b>
+            <div class="stat-card">
+                <small>Total Fee Layanan</small>
+                <div class="stat-val" id="sFee">Rp0</div>
             </div>
-            <div class="box">
-                <small>Total Pengeluaran</small><br>
-                <b id="sExp">Rp0</b>
-                <br><button onclick="openExp()">+ Input</button>
+            <div class="stat-card">
+                <small>Transaksi Pending</small>
+                <div class="stat-val" id="sPend">0</div>
             </div>
         </div>
 
-        <h3>Permintaan Konfirmasi</h3>
-        <div id="reqList"></div>
+        <h3 style="color:var(--dark);">Permintaan Masuk</h3>
+        <div id="requestList"></div>
 
-        <h3>Riwayat Struk (ID: YKLT...)</h3>
-        <button onclick="downloadXLS()">Download Excel</button>
-        <button onclick="wipeData()" style="background:red; color:white;">Hapus Semua</button>
-        <table id="tableHist">
+        <h3 style="color:var(--dark); margin-top:40px;">Riwayat Transaksi</h3>
+        <table>
             <thead>
-                <tr><th>ID</th><th>Tipe</th><th>Detail</th><th>Nominal</th><th>Fee</th></tr>
+                <tr>
+                    <th>ID</th>
+                    <th>Customer</th>
+                    <th>Tipe</th>
+                    <th>Total</th>
+                    <th>Waktu</th>
+                </tr>
             </thead>
-            <tbody></tbody>
+            <tbody id="histTable"></tbody>
         </table>
     </div>
 
-    <div class="modal" id="modalCash">
-        <div class="m-content">
-            <h4>Konfirmasi Cash</h4>
-            <p>Total: <span id="cTotal"></span></p>
-            Input Uang: <input type="number" id="cInput" oninput="calcChange()">
-            <p>Kembalian: <b id="cChange">Rp0</b></p>
-            <button onclick="confirmCash()">PROSES</button>
-            <button onclick="document.getElementById('modalCash').style.display='none'">BATAL</button>
-        </div>
-    </div>
-
-    <div class="modal" id="modalExp">
-        <div class="m-content">
-            <h4>Input Pengeluaran</h4>
-            Ket: <input type="text" id="eNote"><br><br>
-            Nominal: <input type="number" id="eNom"><br><br>
-            <button onclick="saveExp()">SIMPAN</button>
-            <button onclick="document.getElementById('modalExp').style.display='none'">BATAL</button>
-        </div>
-    </div>
-
     <script type="module">
-        import { db, ref, set, push, onValue, update, remove, serverTimestamp } from './firebase-config.js';
+        import { db, ref, set, update, remove, onValue, serverTimestamp } from './firebase-config.js';
 
-        // --- LOGIN LOGIC ---
-        let secret = "";
-        window.genC = () => {
-            secret = Math.random().toString(36).substring(2,7).toUpperCase();
-            document.getElementById('secretCode').innerText = secret;
-        }
-        window.copyC = () => {
-            navigator.clipboard.writeText(secret);
-            alert("Kode disalin");
-        }
-        window.login = () => {
-            if(document.getElementById('inputC').value.toUpperCase() === secret) {
+        // --- AUTH LOGIC ---
+        const USER = "arya1212";
+        const PASS = "ab87bCBG$@y5542hhKLnb";
+
+        window.doLogin = () => {
+            const u = document.getElementById('uName').value;
+            const p = document.getElementById('uPass').value;
+            const remember = true; // Sesuai request "klik" 1 hari
+
+            if(u === USER && p === PASS) {
+                const expiry = new Date().getTime() + (24 * 60 * 60 * 1000); // 1 Hari
+                localStorage.setItem('admin_auth', expiry);
                 document.getElementById('loginGate').style.display = 'none';
-                document.getElementById('mainPanel').style.display = 'block';
-                startAdmin();
+                initApp();
             } else {
-                alert("Kode Salah");
-                genC();
+                alert("Akses Ditolak!");
             }
         }
-        genC();
+        
+        window.doLogout = () => {
+            localStorage.removeItem('admin_auth');
+            location.reload();
+        }
 
-        // --- ADMIN LOGIC ---
-        let currentReq = null;
+        // Cek Login saat load
+        const auth = localStorage.getItem('admin_auth');
+        if(auth && new Date().getTime() < parseInt(auth)) {
+            document.getElementById('loginGate').style.display = 'none';
+            initApp();
+        }
 
-        function startAdmin() {
-            setInterval(() => {
-                document.getElementById('realtimeClock').innerText = new Date().toLocaleTimeString();
-            }, 1000);
+        // --- APP LOGIC ---
+        function initApp() {
+            setInterval(() => document.getElementById('clock').innerText = new Date().toLocaleTimeString(), 1000);
 
-            // Listener Transaksi Masuk
+            // Listener Pending
             onValue(ref(db, 'transactions'), (snap) => {
-                const list = document.getElementById('reqList');
+                const list = document.getElementById('requestList');
                 list.innerHTML = '';
+                let pendCount = 0;
+                
                 const data = snap.val();
                 if(data) {
                     Object.keys(data).forEach(k => {
                         const t = data[k];
                         if(t.status === 'pending') {
+                            pendCount++;
+                            const mapLink = `https://www.google.com/maps?q=${t.customer.lat},${t.customer.lng}`;
+                            const waLink = `https://wa.me/${t.customer.wa}`;
+                            
                             const div = document.createElement('div');
-                            div.className = 'incoming';
+                            div.className = 'req-card';
                             div.innerHTML = `
-                                <span><b>${t.type.toUpperCase()}</b> - Rp${t.finalTotal.toLocaleString()}</span>
+                                <div class="user-info">
+                                    <b>${t.customer.name.toUpperCase()} (Rp${t.total.toLocaleString()})</b>
+                                    Tipe: <span style="color:${t.type=='qris'?'#d4af37':'#10b981'}; font-weight:bold;">${t.type.toUpperCase()}</span><br>
+                                    Pesan: "${t.customer.msg}"<br>
+                                    <a href="${waLink}" target="_blank" class="btn-wa">Chat WA</a>
+                                    <a href="${mapLink}" target="_blank" class="btn-map">Lihat Lokasi</a>
+                                </div>
                                 <div>
-                                    <button onclick="act('${k}','reject')">Tolak (X)</button>
-                                    <button onclick="preConfirm('${k}', '${t.type}', ${t.finalTotal})">Terima (✓)</button>
+                                    <button class="act-btn btn-no" onclick="act('${k}', 'reject')">TOLAK</button>
+                                    <button class="act-btn btn-yes" onclick="act('${k}', 'confirm', ${t.total}, ${t.type=='qris'?200:0}, '${t.customer.name}')">TERIMA</button>
                                 </div>
                             `;
                             list.appendChild(div);
                         }
                     });
                 }
+                document.getElementById('sPend').innerText = pendCount;
             });
 
             // Listener History
             onValue(ref(db, 'history'), (snap) => {
-                const tb = document.querySelector('#tableHist tbody');
+                const tb = document.getElementById('histTable');
                 tb.innerHTML = '';
-                let tProd = 0, tFee = 0, tExp = 0;
+                let inc = 0, fee = 0;
                 
                 const data = snap.val();
                 if(data) {
-                    const sorted = Object.values(data).sort((a,b) => b.id.localeCompare(a.id));
+                    const sorted = Object.values(data).sort((a,b) => b.timestamp - a.timestamp);
                     sorted.forEach(d => {
-                        if(d.type === 'expense') {
-                            tExp += d.amount;
-                        } else {
-                            tProd += d.amount;
-                            tFee += d.fee;
-                        }
-
+                        inc += d.amount;
+                        fee += d.fee;
+                        
+                        const date = new Date(d.timestamp).toLocaleString();
                         tb.innerHTML += `
                             <tr>
                                 <td>${d.id}</td>
-                                <td>${d.type}</td>
-                                <td>${d.details}</td>
-                                <td>Rp${d.amount.toLocaleString()}</td>
-                                <td>Rp${d.fee.toLocaleString()}</td>
+                                <td>${d.customer}</td>
+                                <td>${d.type.toUpperCase()}</td>
+                                <td>Rp${(d.amount+d.fee).toLocaleString()}</td>
+                                <td>${date}</td>
                             </tr>
                         `;
                     });
                 }
-                document.getElementById('sProd').innerText = `Rp${tProd.toLocaleString()}`;
-                document.getElementById('sFee').innerText = `Rp${tFee.toLocaleString()}`;
-                document.getElementById('sExp').innerText = `Rp${tExp.toLocaleString()}`;
+                document.getElementById('sInc').innerText = `Rp${inc.toLocaleString()}`;
+                document.getElementById('sFee').innerText = `Rp${fee.toLocaleString()}`;
             });
         }
 
-        window.act = (key, action) => {
+        window.act = (key, action, total, fee, name) => {
             if(action === 'reject') {
                 update(ref(db, `transactions/${key}`), { status: 'rejected' });
-                setTimeout(() => remove(ref(db, `transactions/${key}`)), 2000);
-            }
-        }
-
-        window.preConfirm = (key, type, total) => {
-            currentReq = { key, type, total };
-            if(type === 'cash') {
-                document.getElementById('modalCash').style.display = 'flex';
-                document.getElementById('cTotal').innerText = `Rp${total.toLocaleString()}`;
+                // Hapus data setelah delay agar animasi user selesai
+                setTimeout(() => remove(ref(db, `transactions/${key}`)), 5000);
             } else {
-                finalize(key, 'QRIS', total, 200, 'Via QRIS Dinamis');
+                update(ref(db, `transactions/${key}`), { status: 'confirmed' });
+                
+                // Masuk History
+                const now = new Date();
+                const id = `TRX${now.getTime()}`;
+                set(ref(db, `history/${id}`), {
+                    id: id,
+                    customer: name,
+                    type: 'income',
+                    amount: total - fee,
+                    fee: fee,
+                    timestamp: serverTimestamp()
+                });
+
+                setTimeout(() => remove(ref(db, `transactions/${key}`)), 5000);
             }
-        }
-
-        window.calcChange = () => {
-            const inp = document.getElementById('cInput').value;
-            const chg = inp - currentReq.total;
-            document.getElementById('cChange').innerText = `Rp${chg.toLocaleString()}`;
-            if(chg < 0) document.getElementById('cChange').style.color = 'red';
-            else document.getElementById('cChange').style.color = 'black';
-        }
-
-        window.confirmCash = () => {
-            const inp = document.getElementById('cInput').value;
-            if(inp < currentReq.total) return alert("Uang Kurang!");
-            finalize(currentReq.key, 'CASH', currentReq.total, 0, `Cash (Bayar: ${inp})`);
-            document.getElementById('modalCash').style.display = 'none';
-            document.getElementById('cInput').value = '';
-        }
-
-        function finalize(key, typeLabel, total, fee, detail) {
-            update(ref(db, `transactions/${key}`), { status: 'confirmed' });
-            
-            const now = new Date();
-            const pad = n => n.toString().padStart(2,'0');
-            const id = `YKLT${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
-
-            set(ref(db, `history/${id}`), {
-                id: id,
-                type: typeLabel,
-                amount: total - fee, 
-                fee: fee,
-                details: detail,
-                timestamp: serverTimestamp()
-            });
-
-            setTimeout(() => remove(ref(db, `transactions/${key}`)), 3000);
-        }
-
-        window.openExp = () => document.getElementById('modalExp').style.display = 'flex';
-        window.saveExp = () => {
-            const note = document.getElementById('eNote').value;
-            const nom = parseInt(document.getElementById('eNom').value);
-            
-            const now = new Date();
-            const pad = n => n.toString().padStart(2,'0');
-            const id = `YKLT${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
-
-            set(ref(db, `history/${id}`), {
-                id: id,
-                type: 'expense',
-                amount: nom,
-                fee: 0,
-                details: note,
-                timestamp: serverTimestamp()
-            });
-            document.getElementById('modalExp').style.display = 'none';
-        }
-
-        window.wipeData = () => {
-            if(confirm("Hapus SEMUA data?")) remove(ref(db, 'history'));
         }
         
-        window.downloadXLS = () => {
-            const tbl = document.getElementById("tableHist");
-            const wb = XLSX.utils.table_to_book(tbl);
-            XLSX.writeFile(wb, "Laporan_Yakult.xlsx");
+        window.wipeData = () => {
+            if(confirm("Yakin hapus semua riwayat?")) remove(ref(db, 'history'));
         }
     </script>
 </body>
