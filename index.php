@@ -3,458 +3,447 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Yakult Premium Store</title>
+    <title>TOKO SHOP YAKULT</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #1e293b; /* Luxury Dark Blue */
-            --accent: #d4af37; /* Gold */
-            --bg: #f3f4f6;
-            --white: #ffffff;
-            --success: #10b981;
-            --danger: #ef4444;
-            --glass: rgba(255, 255, 255, 0.95);
-        }
+        :root { --primary: #1e293b; --accent: #d4af37; --bg: #f3f4f6; --white: #ffffff; --success: #10b981; --danger: #ef4444; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg); margin: 0; padding-bottom: 140px; color: #333; }
         
-        body { font-family: 'Poppins', sans-serif; background: var(--bg); margin: 0; padding-bottom: 120px; color: #333; }
-        
-        /* HEADER */
-        .header { background: var(--primary); padding: 20px; border-radius: 0 0 30px 30px; color: white; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.2); margin-bottom: 20px; }
-        .header h2 { margin: 0; font-weight: 600; letter-spacing: 1px; }
+        .header { background: var(--primary); padding: 20px; border-radius: 0 0 30px 30px; color: white; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.2); position: relative; z-index: 10; }
+        .admin-shortcut { position: absolute; top: 10px; right: 10px; opacity: 0.3; color: white; text-decoration: none; font-size: 10px; }
 
-        /* PRODUCT GRID */
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 15px; max-width: 600px; margin: 0 auto; }
-        .card { background: var(--white); padding: 15px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); text-align: center; transition: transform 0.2s; border: 1px solid rgba(0,0,0,0.02); }
-        .card:active { transform: scale(0.98); }
+        .card { background: var(--white); padding: 15px; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); text-align: center; }
+        .img-box { width: 100%; height: 120px; margin-bottom: 10px; display:flex; align-items:center; justify-content:center; border-radius: 15px; overflow: hidden; }
+        .card img { max-width: 100%; max-height: 100%; border-radius: 15px; }
         
-        .img-box { width: 100%; height: 120px; border-radius: 15px; overflow: hidden; margin-bottom: 10px; background: #f8f9fa; display:flex; align-items:center; justify-content:center; }
-        .card img { width: 100%; height: 100%; object-fit: contain; }
-        .p-name { font-weight: 600; font-size: 14px; margin-bottom: 5px; color: var(--primary); }
-        .p-price { color: var(--accent); font-weight: 700; font-size: 15px; }
-
         .controls { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; background: #f1f5f9; border-radius: 50px; padding: 5px; }
-        .btn-c { width: 28px; height: 28px; border-radius: 50%; border: none; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; transition: 0.2s; }
-        .btn-min { background: var(--white); color: var(--danger); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .btn-c { width: 28px; height: 28px; border-radius: 50%; border: none; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .btn-min { background: var(--white); color: var(--danger); }
         .btn-plus { background: var(--primary); color: var(--accent); }
 
-        /* CART FLOATING */
-        .cart-float { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 500px; background: rgba(30, 41, 59, 0.95); backdrop-filter: blur(10px); color: white; border-radius: 20px; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 15px 40px rgba(0,0,0,0.3); z-index: 90; border: 1px solid rgba(255,255,255,0.1); }
-        .cart-info b { display: block; font-size: 16px; color: var(--accent); }
-        .cart-info small { color: #ccc; font-size: 11px; }
-        .btn-chk { background: var(--accent); color: var(--primary); border: none; padding: 10px 20px; border-radius: 12px; font-weight: 700; cursor: pointer; box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4); }
+        .float-container { position: fixed; bottom: 20px; left: 0; width: 100%; z-index: 90; display: flex; flex-direction: column; align-items: center; gap: 10px; pointer-events: none; }
+        .status-bar { pointer-events: auto; background: var(--primary); color: white; padding: 10px 20px; border-radius: 50px; font-size: 12px; display: flex; align-items: center; gap: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.3); cursor: pointer; transform: translateY(100px); transition: 0.3s; }
+        .status-bar.show { transform: translateY(0); }
+        .status-dot { width: 8px; height: 8px; background: var(--accent); border-radius: 50%; animation: pulse 1s infinite; }
+        
+        .cart-float { pointer-events: auto; width: 90%; max-width: 500px; background: rgba(30, 41, 59, 0.95); backdrop-filter: blur(10px); color: white; border-radius: 20px; padding: 15px 20px; display: none; justify-content: space-between; align-items: center; box-shadow: 0 15px 40px rgba(0,0,0,0.3); }
+        .btn-chk { background: var(--accent); color: var(--primary); border: none; padding: 10px 20px; border-radius: 12px; font-weight: 700; cursor: pointer; }
 
-        /* POPUP & MODAL LUXURY */
         .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); z-index: 100; justify-content: center; align-items: center; }
-        .modal { background: var(--white); width: 85%; max-width: 400px; padding: 25px; border-radius: 24px; box-shadow: 0 20px 60px rgba(0,0,0,0.25); position: relative; animation: slideUp 0.3s ease; }
-        @keyframes slideUp { from { opacity:0; transform:translateY(50px); } to { opacity:1; transform:translateY(0); } }
-
-        .modal h3 { margin: 0 0 20px 0; color: var(--primary); text-align: center; font-size: 18px; border-bottom: 2px solid #f1f5f9; padding-bottom: 15px; }
-
-        /* FORM STYLES */
-        .form-group { margin-bottom: 15px; }
-        .form-label { display: block; font-size: 12px; color: #64748b; margin-bottom: 5px; font-weight: 600; }
-        .inp-modern { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 12px; font-family: 'Poppins'; box-sizing: border-box; font-size: 14px; transition: 0.3s; background: #f8fafc; color: #334155; }
-        .inp-modern:focus { border-color: var(--primary); background: white; outline: none; box-shadow: 0 0 0 3px rgba(30, 41, 59, 0.1); }
+        .modal { background: var(--white); width: 85%; max-width: 400px; padding: 25px; border-radius: 24px; animation: slideUp 0.3s ease; max-height: 90vh; overflow-y: auto; }
         
-        textarea.inp-modern { resize: none; height: 80px; }
+        .pay-box { background: #f8fafc; padding: 15px; border-radius: 12px; text-align: center; margin: 15px 0; min-height: 200px; display: flex; flex-direction: column; justify-content: center; align-items: center; border: 1px solid #e2e8f0; position: relative; }
+        .item-list { width: 100%; text-align: left; margin-bottom: 15px; font-size: 14px; }
+        .item-row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px dashed #eee; }
+        .total-box { font-weight: 800; font-size: 18px; color: var(--primary); margin-top: 10px; text-align: right; }
+        
+        /* Custom File Input */
+        .file-upload-wrapper { width: 100%; margin-top: 10px; }
+        .file-upload-input { display: none; }
+        .file-upload-btn { display: block; width: 100%; padding: 12px; background: #e2e8f0; color: #475569; border-radius: 12px; text-align: center; cursor: pointer; font-size: 13px; border: 2px dashed #cbd5e1; transition: 0.2s; }
+        .file-upload-btn:hover { border-color: var(--primary); color: var(--primary); }
+        .file-selected { background: #dcfce7; color: #166534; border-color: #166534; }
 
-        /* MAP BUTTON */
-        .loc-box { background: #f1f5f9; padding: 10px; border-radius: 12px; text-align: center; margin-bottom: 15px; border: 1px dashed #cbd5e1; }
-        .btn-loc { background: #3b82f6; color: white; border: none; padding: 8px 15px; border-radius: 8px; font-size: 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; }
-        .loc-status { font-size: 11px; color: #64748b; margin-top: 5px; display: block; }
-
-        /* PAYMENT BOX (QRIS/ANIMATION) */
-        .pay-box { min-height: 250px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f8fafc; border-radius: 16px; border: 1px solid #e2e8f0; margin-bottom: 15px; padding: 15px; position: relative; overflow: hidden; }
-        .qris-img { width: 100%; max-width: 220px; border-radius: 10px; mix-blend-mode: multiply; }
-        .timer { font-size: 20px; font-weight: 700; color: var(--danger); margin: 10px 0; letter-spacing: 2px; }
-
-        /* ANIMATION STATES */
-        .anim-container { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100%; }
-        .check-icon { width: 80px; height: 80px; background: var(--success); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 40px; animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); margin-bottom: 15px; }
-        .cross-icon { width: 80px; height: 80px; background: var(--danger); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 40px; animation: popIn 0.5s; margin-bottom: 15px; }
+        .btn-act { width: 100%; padding: 12px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; margin-top: 10px; font-family: inherit; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-cancel { background: transparent; color: #94a3b8; }
+        
+        .status-icon { font-size: 60px; margin-bottom: 10px; animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         @keyframes popIn { 0% { transform: scale(0); } 100% { transform: scale(1); } }
-
-        /* BUTTONS */
-        .btn-main { width: 100%; padding: 14px; border: none; border-radius: 12px; background: var(--success); color: white; font-weight: 600; font-size: 14px; cursor: pointer; transition: 0.3s; margin-top: 10px; }
-        .btn-main:hover { background: #059669; }
-        .btn-sec { width: 100%; padding: 12px; background: transparent; color: #64748b; border: none; cursor: pointer; font-size: 13px; margin-top: 5px; }
+        @keyframes slideUp { from { transform:translateY(50px); opacity:0; } to { transform:translateY(0); opacity:1; } }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
         
-        .upload-btn-wrapper { position: relative; overflow: hidden; display: inline-block; width: 100%; margin-top: 10px; }
-        .btn-upload { border: 2px dashed #cbd5e1; color: #64748b; background-color: white; padding: 8px 20px; border-radius: 8px; font-size: 13px; font-weight: bold; width: 100%; cursor: pointer; }
-        .upload-btn-wrapper input[type=file] { font-size: 100px; position: absolute; left: 0; top: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer; }
-
-        .hidden { display: none; }
+        .inp-modern { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 12px; margin-bottom: 10px; box-sizing: border-box; font-family: 'Poppins'; }
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <h2>TOKOTOPARYA</h2>
-        <small style="opacity: 0.8;">Premium Game Topup & Drinks</small>
+        <a href="admin11ad.php" class="admin-shortcut">Admin Panel</a>
+        <h2>TOKO SHOP YAKULT</h2>
+        <small>Premium Yakult & Game Store</small>
     </div>
 
-    <div class="grid" id="productGrid">
+    <div class="grid" id="productGrid"></div>
+
+    <div class="float-container">
+        <div id="statusBar" class="status-bar" onclick="openPaymentModal()">
+            <div class="status-dot"></div>
+            <span>Status Pesanan (Klik)</span>
         </div>
 
-    <div class="cart-float" id="cartFloat" style="display: none;">
-        <div class="cart-info">
-            <small>Total Pembayaran</small>
-            <span id="floatTotal">Rp0</span>
-        </div>
-        <div style="display:flex; gap:10px;">
-            <button class="btn-chk" onclick="openForm('cash')" style="background:#fff; color:#333;">CASH</button>
-            <button class="btn-chk" onclick="openForm('qris')">QRIS</button>
+        <div class="cart-float" id="cartFloat">
+            <div>
+                <small>Total</small>
+                <b style="display:block; font-size:16px; color:var(--accent);" id="floatTotal">Rp0</b>
+            </div>
+            <div style="display:flex; gap:10px;">
+                <button class="btn-chk" style="background:white; color:#333;" onclick="openForm('cash')">CASH</button>
+                <button class="btn-chk" onclick="openForm('qris')">QRIS</button>
+            </div>
         </div>
     </div>
 
-    <div class="overlay" id="mainOverlay">
-        
-        <div class="modal" id="modalForm">
-            <h3>INFORMASI PEMBELI</h3>
+    <div class="overlay" id="overlayForm">
+        <div class="modal">
+            <h3>Data Pembeli</h3>
+            <input type="text" id="inpName" class="inp-modern" placeholder="Nama Lengkap">
+            <input type="tel" id="inpWA" class="inp-modern" placeholder="Nomor WhatsApp (628...)">
+            <textarea id="inpMsg" class="inp-modern" placeholder="Alamat Lengkap / Catatan..."></textarea>
             
-            <div class="form-group">
-                <label class="form-label">Nama Lengkap</label>
-                <input type="text" id="inpName" class="inp-modern" placeholder="Nama Anda...">
-            </div>
-            
-            <div class="form-group">
-                <label class="form-label">WhatsApp (Aktif)</label>
-                <input type="tel" id="inpWA" class="inp-modern" placeholder="08xxxxxxxxxx">
+            <div style="background:#f1f5f9; padding:10px; border-radius:10px; margin-bottom:15px; text-align:center;">
+                <button onclick="getLoc()" style="background:#3b82f6; color:white; border:none; padding:8px 15px; border-radius:8px; cursor:pointer;">📍 Share Lokasi</button>
+                <div id="locStatus" style="font-size:11px; margin-top:5px; color:#64748b;">Wajib diisi untuk pengiriman</div>
             </div>
 
-            <div class="form-group">
-                <label class="form-label">Pesan / Alamat (Max 150)</label>
-                <textarea id="inpMsg" class="inp-modern" maxlength="150" placeholder="Catatan untuk penjual..."></textarea>
-            </div>
-
-            <div class="loc-box">
-                <button class="btn-loc" onclick="getLoc()">
-                    📍 Share Lokasi Saya
-                </button>
-                <span id="locStatus" class="loc-status">Belum ada lokasi</span>
-            </div>
-
-            <button class="btn-main" id="btnConfirmForm" onclick="submitForm()" style="background: #cbd5e1; cursor: not-allowed;" disabled>
-                KONFIRMASI
-            </button>
-            <button class="btn-sec" onclick="closeOverlay()">Batal</button>
+            <button onclick="submitOrder()" class="btn-act" style="background:var(--success); color:white;">LANJUT PEMBAYARAN</button>
+            <button onclick="closeOverlay('overlayForm')" class="btn-act btn-cancel">Batal</button>
         </div>
+    </div>
 
-        <div class="modal hidden" id="modalPayment">
-            <h3 id="payTitle">PEMBAYARAN</h3>
+    <div class="overlay" id="overlayPayment">
+        <div class="modal">
+            <h3 id="payTitle">Menunggu Pembayaran</h3>
+            <div id="payItems" class="item-list"></div>
             
-            <div class="pay-box" id="dynamicBox">
-                </div>
-
-            <div id="paymentControls">
-                <div id="qrisControls" class="hidden">
-                    <div class="timer" id="timerDisplay">05:00</div>
-                    <div class="upload-btn-wrapper">
-                        <button class="btn-upload" id="btnFileText">Upload Bukti Transfer</button>
-                        <input type="file" id="fileProof" accept="image/*" onchange="handleFile(this)">
+            <div class="pay-box" id="payContent">
+                <div class="loader">Loading...</div>
+            </div>
+            
+            <div id="payFooter">
+                <div class="total-box" id="payTotalDisplay"></div>
+                <div id="timerDisplay" style="color:var(--danger); font-weight:bold; margin:10px 0; text-align:center;"></div>
+                
+                <div id="proofSection" class="hidden">
+                    <div class="file-upload-wrapper">
+                        <label for="fileProof" class="file-upload-btn" id="fileLabel">
+                            📂 Pilih Bukti Transfer
+                        </label>
+                        <input type="file" id="fileProof" class="file-upload-input" accept="image/*" onchange="previewFile()">
                     </div>
-                    <button class="btn-main" onclick="sendProof()">KIRIM BUKTI</button>
-                </div>
-
-                <div id="cashControls" class="hidden">
-                    <p style="text-align:center; font-size:13px; color:#666;">Silakan tunggu konfirmasi Admin. Siapkan uang pas.</p>
+                    <button onclick="sendProof()" class="btn-act btn-primary">KIRIM BUKTI</button>
                 </div>
             </div>
-             <button class="btn-sec" onclick="closeOverlay()">Tutup</button>
+            
+            <button onclick="cancelOrder()" id="btnCancelOrder" class="btn-act" style="background:var(--danger); color:white; margin-top:15px;">BATALKAN PESANAN</button>
+            <button onclick="closeOverlay('overlayPayment')" class="btn-act btn-cancel">Tutup (Proses Berjalan)</button>
         </div>
-
     </div>
 
     <script type="module">
         import { db, ref, set, push, onValue, remove } from './firebase-config.js';
 
-        // --- DATA PRODUK ---
+        // RAW QRIS STRING DARI USER
+        const RAW_QRIS = "00020101021126570011ID.DANA.WWW011893600915380003780002098000378000303UMI51440014ID.CO.QRIS.WWW0215ID10243620012490303UMI5204549953033605802ID5910Warr2 Shop6015Kab. Bandung Ba6105402936304BF4C";
+
         const products = [
-            { id: 1, name: "Yakult Original", price: 10500, img: "Yakult-original.png" },
-            { id: 2, name: "Yakult Mangga", price: 10500, img: "Yakult-mangga.png" },
-            { id: 3, name: "Yakult Light", price: 13000, img: "Yakult-light.png" },
-            { id: 4, name: "Test Produk", price: 100, img: "test.png" }
+            { id: 1, name: "Yakult Original", price: 10500, img: "img/Yakult-original.png" },
+            { id: 2, name: "Yakult Mangga", price: 12000, img: "img/Yakult-mangga.png" },
+            { id: 3, name: "Yakult Light", price: 13000, img: "img/Yakult-light.png" },
+            { id: 4, name: "Test Produk", price: 100, img: "img/test.png" }
         ];
 
-        let cart = {};
-        let currentTxKey = null;
-        let selectedType = '';
-        let userLocation = null;
-        let timerInterval = null;
+        let cart = JSON.parse(localStorage.getItem('cart') || '{}');
+        let activeTxId = localStorage.getItem('activeTxId');
+        let userLoc = JSON.parse(localStorage.getItem('userLoc') || 'null');
+        let selectedType = localStorage.getItem('selectedType') || 'qris';
+        let timerInt = null;
 
-        // RENDER PRODUK
-        const grid = document.getElementById('productGrid');
-        products.forEach(p => {
-            grid.innerHTML += `
-            <div class="card">
-                <div class="img-box"><img src="img/${p.img}" alt="${p.name}"></div>
-                <div class="p-name">${p.name}</div>
-                <div class="p-price">Rp${p.price.toLocaleString('id-ID')}</div>
-                <div class="controls">
-                    <button class="btn-c btn-min" onclick="window.updCart(${p.id}, -1)">-</button>
-                    <span id="qty-${p.id}" style="font-size:14px; font-weight:600;">0</span>
-                    <button class="btn-c btn-plus" onclick="window.updCart(${p.id}, 1)">+</button>
-                </div>
-            </div>`;
-        });
+        function init() {
+            const g = document.getElementById('productGrid');
+            g.innerHTML = '';
+            products.forEach(p => {
+                const qty = cart[p.id] || 0;
+                g.innerHTML += `
+                <div class="card">
+                    <div class="img-box"><img src="${p.img}" alt="${p.name}" onerror="this.src='https://placehold.co/100?text=Produk'"></div>
+                    <div class="p-name">${p.name}</div>
+                    <div class="p-price">Rp${p.price.toLocaleString()}</div>
+                    <div class="controls">
+                        <button class="btn-c btn-min" onclick="window.updCart(${p.id}, -1)">-</button>
+                        <span id="qty-${p.id}" style="font-weight:bold;">${qty}</span>
+                        <button class="btn-c btn-plus" onclick="window.updCart(${p.id}, 1)">+</button>
+                    </div>
+                </div>`;
+            });
+            updateCartUI();
+            if(activeTxId) checkActiveTx();
+        }
+        window.onload = init;
 
         window.updCart = (id, val) => {
             if(!cart[id]) cart[id] = 0;
             cart[id] += val;
             if(cart[id] <= 0) delete cart[id];
+            localStorage.setItem('cart', JSON.stringify(cart));
             document.getElementById(`qty-${id}`).innerText = cart[id] || 0;
-            renderTotal();
-        }
+            updateCartUI();
+        };
 
-        function renderTotal() {
+        function updateCartUI() {
             let total = 0;
             Object.keys(cart).forEach(k => {
                 const p = products.find(x => x.id == k);
-                total += p.price * cart[k];
+                if(p) total += p.price * cart[k];
             });
-            document.getElementById('floatTotal').innerHTML = `Rp${total.toLocaleString('id-ID')}`;
-            document.getElementById('cartFloat').style.display = total > 0 ? 'flex' : 'none';
-            return total;
+            document.getElementById('floatTotal').innerText = `Rp${total.toLocaleString()}`;
+            // Sembunyikan cart jika sedang ada transaksi aktif
+            document.getElementById('cartFloat').style.display = (total > 0 && !activeTxId) ? 'flex' : 'none';
         }
 
-        // --- FLOW STEP 1: BUKA FORM ---
         window.openForm = (type) => {
             selectedType = type;
-            document.getElementById('mainOverlay').style.display = 'flex';
-            document.getElementById('modalForm').classList.remove('hidden');
-            document.getElementById('modalPayment').classList.add('hidden');
-        }
+            localStorage.setItem('selectedType', type);
+            document.getElementById('overlayForm').style.display = 'flex';
+        };
 
-        // --- LOCATION LOGIC ---
         window.getLoc = () => {
-            const status = document.getElementById('locStatus');
-            const btn = document.getElementById('btnConfirmForm');
-            
-            if(!navigator.geolocation) {
-                status.innerText = "Browser tidak dukung lokasi";
-                return;
-            }
-            status.innerText = "Mencari koordinat...";
-            
-            navigator.geolocation.getCurrentPosition((pos) => {
-                userLocation = {
-                    lat: pos.coords.latitude,
-                    lng: pos.coords.longitude
-                };
-                status.innerText = `Lokasi Terkunci: ${userLocation.lat.toFixed(4)}, ${userLocation.lng.toFixed(4)}`;
-                status.style.color = "green";
-                // Aktifkan tombol konfirmasi
-                btn.disabled = false;
-                btn.style.background = "var(--success)";
-                btn.style.cursor = "pointer";
-            }, (err) => {
-                status.innerText = "Gagal: Izinkan akses lokasi!";
-                status.style.color = "red";
-            });
-        }
+            if(!navigator.geolocation) return alert("Browser tidak support lokasi");
+            document.getElementById('locStatus').innerText = "Mencari...";
+            navigator.geolocation.getCurrentPosition(p => {
+                userLoc = { lat: p.coords.latitude, lng: p.coords.longitude };
+                localStorage.setItem('userLoc', JSON.stringify(userLoc));
+                document.getElementById('locStatus').innerText = "Lokasi terkunci!";
+                document.getElementById('locStatus').style.color = "green";
+            }, () => alert("Mohon izinkan lokasi!"));
+        };
 
-        // --- FLOW STEP 2: SUBMIT FORM & BUKA PAYMENT ---
-        window.submitForm = async () => {
+        window.closeOverlay = (id) => document.getElementById(id).style.display = 'none';
+
+        window.submitOrder = async () => {
             const name = document.getElementById('inpName').value;
             const wa = document.getElementById('inpWA').value;
             const msg = document.getElementById('inpMsg').value;
 
-            if(!name || !wa) return alert("Nama dan WA wajib diisi!");
-            if(!userLocation) return alert("Mohon share lokasi dulu!");
+            if(!name || !wa || !userLoc) return alert("Mohon lengkapi Data dan Lokasi!");
 
-            // Pindah Modal
-            document.getElementById('modalForm').classList.add('hidden');
-            const payModal = document.getElementById('modalPayment');
-            payModal.classList.remove('hidden');
-
-            const rawTotal = renderTotal();
-            const fee = (selectedType === 'qris') ? 200 : 0;
-            const finalTotal = rawTotal + fee;
-
-            // Inisialisasi Konten Payment Box
-            const box = document.getElementById('dynamicBox');
-            const qCtr = document.getElementById('qrisControls');
-            const cCtr = document.getElementById('cashControls');
-
-            if(selectedType === 'qris') {
-                document.getElementById('payTitle').innerText = "SCAN QRIS";
-                qCtr.classList.remove('hidden');
-                cCtr.classList.add('hidden');
-                
-                box.innerHTML = `<div class="spinner" style="margin:20px;">Generating QRIS...</div>`;
-                
-                // Fetch QRIS Image via Proxy
-                try {
-                    const res = await fetch('proxy.php', {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({
-                            amount: finalTotal,
-                            qris_statis: "00020101021126570011ID.DANA.WWW011893600915380003780002098000378000303UMI51440014ID.CO.QRIS.WWW0215ID10243620012490303UMI5204549953033605802ID5910Warr2 Shop6015Kab. Bandung Ba6105402936304BF4C"
-                        })
-                    });
-                    const data = await res.json();
-                    if(data.status === 'success') {
-                        box.innerHTML = `
-                            <img src="data:image/png;base64,${data.qris_base64}" class="qris-img">
-                            <p style="margin:5px 0 0 0; font-weight:bold;">Rp${finalTotal.toLocaleString()}</p>
-                        `;
-                        startTimer();
-                    } else throw new Error("Gagal");
-                } catch(e) {
-                    box.innerHTML = `<p style="color:red">Gagal memuat QRIS</p>`;
-                }
-
-            } else {
-                // CASH
-                document.getElementById('payTitle').innerText = "PEMBAYARAN CASH";
-                qCtr.classList.add('hidden');
-                cCtr.classList.remove('hidden');
-                
-                // Tampilkan rincian
-                let itemList = '';
-                Object.keys(cart).forEach(k => {
-                    const p = products.find(x => x.id == k);
-                    itemList += `<div>${p.name} x${cart[k]}</div>`;
-                });
-
-                box.innerHTML = `
-                    <div style="text-align:left; width:100%; font-size:14px;">
-                        <h4 style="margin:0 0 10px 0; border-bottom:1px dashed #ccc; padding-bottom:5px;">Rincian Pesanan</h4>
-                        ${itemList}
-                        <h3 style="margin:10px 0; text-align:right;">Total: Rp${finalTotal.toLocaleString()}</h3>
-                        <div style="background:#fff3cd; padding:10px; border-radius:8px; font-size:12px;">
-                            Note: Mohon siapkan uang pas saat kurir datang.
-                        </div>
-                    </div>
-                `;
-            }
-
-            // SIMPAN KE FIREBASE
-            const newRef = push(ref(db, 'transactions'));
-            currentTxKey = newRef.key;
+            let total = 0;
+            let itemList = [];
+            Object.keys(cart).forEach(k => {
+                const p = products.find(x => x.id == k);
+                total += p.price * cart[k];
+                itemList.push({ name: p.name, qty: cart[k], price: p.price });
+            });
             
-            set(newRef, {
+            // Fee logic
+            const fee = selectedType === 'qris' ? 200 : 0;
+            const finalTotal = total + fee;
+
+            const newRef = push(ref(db, 'transactions'));
+            activeTxId = newRef.key;
+            localStorage.setItem('activeTxId', activeTxId);
+
+            const txData = {
                 type: selectedType,
-                customer: {
-                    name: name,
-                    wa: wa,
-                    msg: msg,
-                    lat: userLocation.lat,
-                    lng: userLocation.lng
-                },
-                cart: cart,
+                customer: { name, wa, msg, lat: userLoc.lat, lng: userLoc.lng },
+                items: itemList,
                 total: finalTotal,
+                fee: fee,
                 status: 'pending',
                 timestamp: Date.now()
-            });
+            };
 
-            // Jika Cash, langsung kirim notif telegram (Tanpa gambar)
+            await set(newRef, txData);
+            
+            document.getElementById('overlayForm').style.display = 'none';
+            document.getElementById('cartFloat').style.display = 'none';
+            
+            // LOGIKA CASH: LANGSUNG KIRIM TELEGRAM
             if(selectedType === 'cash') {
-                sendTelegram(name, wa, msg, userLocation, finalTotal, 'CASH', null);
+                const telegramMsg = `<b>PESANAN BARU (CASH)</b>\n\nNama: ${name}\nWA: ${wa}\nAlamat: ${msg}\n\n<b>Item:</b>\n${itemList.map(i=>`- ${i.name} x${i.qty}`).join('\n')}\n\n<b>Total: Rp${finalTotal.toLocaleString()}</b>\n(Bayar di tempat)`;
+                
+                const formData = new FormData();
+                formData.append('action', 'send_telegram');
+                formData.append('caption', telegramMsg);
+                formData.append('lat', userLoc.lat);
+                formData.append('lng', userLoc.lng);
+                fetch('proxy.php', { method: 'POST', body: formData });
+            } else {
+                // LOGIKA QRIS: Set Timer
+                localStorage.setItem('qrisTimerTarget', Date.now() + (5 * 60 * 1000));
             }
 
-            // LISTENER STATUS TRANSAKSI (Untuk Animasi)
-            onValue(ref(db, `transactions/${currentTxKey}`), (snap) => {
-                const val = snap.val();
-                if(!val) return;
-                
-                const dBox = document.getElementById('dynamicBox');
-                
-                if(val.status === 'confirmed') {
-                    // Animasi Centang
-                    dBox.innerHTML = `
-                        <div class="anim-container">
-                            <div class="check-icon">✓</div>
-                            <h4 style="color:var(--success); margin:0;">BERHASIL</h4>
-                            <small>Pesanan diproses</small>
-                        </div>
-                    `;
-                    document.getElementById('paymentControls').style.display = 'none';
-                    clearInterval(timerInterval);
-                } else if(val.status === 'rejected') {
-                    // Animasi Silang
-                    dBox.innerHTML = `
-                        <div class="anim-container">
-                            <div class="cross-icon">✕</div>
-                            <h4 style="color:var(--danger); margin:0;">DITOLAK</h4>
-                            <small>Hubungi Admin</small>
-                        </div>
-                    `;
-                    document.getElementById('paymentControls').style.display = 'none';
-                    clearInterval(timerInterval);
+            checkActiveTx();
+            openPaymentModal();
+        };
+
+        window.openPaymentModal = () => {
+            document.getElementById('overlayPayment').style.display = 'flex';
+        }
+
+        window.cancelOrder = async () => {
+            if(!activeTxId) return;
+            if(confirm("Yakin batalkan pesanan?")) {
+                await remove(ref(db, `transactions/${activeTxId}`));
+                localStorage.removeItem('activeTxId');
+                localStorage.removeItem('cart');
+                location.reload();
+            }
+        }
+
+        function checkActiveTx() {
+            if(!activeTxId) return;
+            const statBar = document.getElementById('statusBar');
+            statBar.classList.add('show');
+
+            onValue(ref(db, `transactions/${activeTxId}`), (snap) => {
+                const data = snap.val();
+                if(!data) {
+                    // Transaksi hilang (dihapus/batal)
+                    localStorage.removeItem('activeTxId');
+                    localStorage.removeItem('cart');
+                    location.reload();
+                    return;
                 }
+                renderPaymentUI(data);
             });
         }
 
-        // --- TELEGRAM SENDER ---
-        window.handleFile = (input) => {
-            if(input.files && input.files[0]) {
-                document.getElementById('btnFileText').innerText = "File: " + input.files[0].name;
+        function renderPaymentUI(data) {
+            const content = document.getElementById('payContent');
+            const itemsBox = document.getElementById('payItems');
+            const totalBox = document.getElementById('payTotalDisplay');
+            const proofSec = document.getElementById('proofSection');
+            const btnCancel = document.getElementById('btnCancelOrder');
+            
+            // Render Items
+            itemsBox.innerHTML = '<h4>Detail Pesanan:</h4>';
+            data.items.forEach(i => {
+                itemsBox.innerHTML += `<div class="item-row"><span>${i.name} x${i.qty}</span><span>Rp${(i.price*i.qty).toLocaleString()}</span></div>`;
+            });
+            if(data.fee > 0) {
+                itemsBox.innerHTML += `<div class="item-row"><span>Biaya Layanan</span><span>Rp${data.fee.toLocaleString()}</span></div>`;
+            }
+            totalBox.innerHTML = `TOTAL: Rp${data.total.toLocaleString()}`;
+
+            // LOGIKA STATUS REALTIME
+            if(data.status === 'confirmed') {
+                // CENTANG HIJAU
+                content.innerHTML = `
+                    <div class="status-icon" style="color:var(--success);">✅</div>
+                    <h3 style="color:var(--success);">PESANAN DITERIMA</h3>
+                    <p>Terima kasih! Pesanan segera diproses/dikirim.</p>
+                `;
+                proofSec.classList.add('hidden');
+                btnCancel.classList.add('hidden');
+                document.getElementById('timerDisplay').classList.add('hidden');
+                
+                // Clear data after 5 sec
+                setTimeout(() => {
+                   localStorage.removeItem('activeTxId');
+                   localStorage.removeItem('cart');
+                   location.reload();
+                }, 5000);
+
+            } else if(data.status === 'rejected') {
+                // SILANG MERAH
+                content.innerHTML = `
+                    <div class="status-icon" style="color:var(--danger);">❌</div>
+                    <h3 style="color:var(--danger);">PESANAN DITOLAK</h3>
+                    <p>Maaf, admin membatalkan pesanan ini.</p>
+                `;
+                proofSec.classList.add('hidden');
+                btnCancel.classList.add('hidden');
+                
+                setTimeout(() => {
+                   localStorage.removeItem('activeTxId');
+                   location.reload();
+                }, 5000);
+
+            } else {
+                // PENDING (Menunggu Bayar/Konfirmasi)
+                if(data.type === 'qris') {
+                    // Generate QR Image dari API
+                    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(RAW_QRIS)}`;
+                    content.innerHTML = `
+                        <img src="${qrUrl}" style="width:200px; height:200px; border-radius:10px; border:2px solid var(--primary);">
+                        <p style="margin-top:10px; font-weight:bold;">Scan QRIS Dana</p>
+                        <small>Silakan transfer sesuai total</small>
+                    `;
+                    proofSec.classList.remove('hidden');
+                    startTimer();
+                } else {
+                    content.innerHTML = `
+                        <div class="status-icon" style="font-size:50px;">💵</div>
+                        <h3>PEMBAYARAN CASH</h3>
+                        <p>Pesanan telah masuk ke Admin.<br>Mohon siapkan uang pas saat barang sampai.</p>
+                    `;
+                    proofSec.classList.add('hidden'); // Cash tidak perlu upload bukti
+                    document.getElementById('timerDisplay').classList.add('hidden');
+                }
+            }
+        }
+
+        function startTimer() {
+            if(timerInt) clearInterval(timerInt);
+            const target = parseInt(localStorage.getItem('qrisTimerTarget'));
+            timerInt = setInterval(() => {
+                const now = Date.now();
+                const diff = target - now;
+                if(diff <= 0) {
+                    clearInterval(timerInt);
+                    document.getElementById('timerDisplay').innerText = "WAKTU HABIS - Silakan Refresh";
+                    return;
+                }
+                const m = Math.floor(diff / 60000);
+                const s = Math.floor((diff % 60000) / 1000);
+                document.getElementById('timerDisplay').innerText = `Sisa Waktu: ${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+            }, 1000);
+        }
+
+        // Preview nama file yang dipilih
+        window.previewFile = () => {
+            const file = document.getElementById('fileProof').files[0];
+            const label = document.getElementById('fileLabel');
+            if(file) {
+                label.innerText = "✅ " + file.name;
+                label.classList.add('file-selected');
             }
         }
 
         window.sendProof = () => {
-            const input = document.getElementById('fileProof');
-            if(!input.files || !input.files[0]) return alert("Pilih foto bukti dulu!");
+            const file = document.getElementById('fileProof').files[0];
+            if(!file) return alert("Silakan pilih foto bukti transfer terlebih dahulu!");
             
-            // Ambil data form
-            const name = document.getElementById('inpName').value;
-            const wa = document.getElementById('inpWA').value;
-            const msg = document.getElementById('inpMsg').value;
-            const total = renderTotal() + 200; // QRIS fee
+            const btn = document.querySelector('#proofSection button');
+            btn.innerText = "Mengirim...";
+            btn.disabled = true;
 
-            sendTelegram(name, wa, msg, userLocation, total, 'QRIS', input.files[0]);
-            
-            alert("Bukti terkirim! Menunggu konfirmasi admin...");
-        }
+            // Fetch data transaksi untuk caption
+            onValue(ref(db, `transactions/${activeTxId}`), (snap) => {
+                const data = snap.val();
+                if(!data) return;
 
-        async function sendTelegram(name, wa, msg, loc, total, type, fileObj) {
-            const mapsLink = `https://www.google.com/maps?q=${loc.lat},${loc.lng}`;
-            const caption = `
-<b>PESANAN BARU (${type})</b>
-👤 <b>Nama:</b> ${name}
-📞 <b>WA:</b> ${wa}
-💰 <b>Total:</b> Rp${total.toLocaleString()}
-📝 <b>Pesan:</b> ${msg}
+                let detailMsg = `<b>BUKTI TRANSFER (QRIS)</b>\n\n`;
+                detailMsg += `<b>Customer:</b> ${data.customer.name} (${data.customer.wa})\n`;
+                detailMsg += `<b>Catatan:</b> ${data.customer.msg}\n\n`;
+                detailMsg += `<b>Order:</b>\n`;
+                data.items.forEach(i => detailMsg += `- ${i.name} x${i.qty}\n`);
+                detailMsg += `Fee: Rp${data.fee.toLocaleString()}\n`;
+                detailMsg += `<b>TOTAL: Rp${data.total.toLocaleString()}</b>`;
 
-📍 <a href="${mapsLink}">LIHAT LOKASI DI MAPS</a>
-            `.trim();
+                const formData = new FormData();
+                formData.append('action', 'send_telegram');
+                formData.append('photo', file);
+                formData.append('caption', detailMsg);
+                formData.append('lat', data.customer.lat);
+                formData.append('lng', data.customer.lng);
 
-            const formData = new FormData();
-            formData.append('action', 'send_telegram');
-            formData.append('caption', caption);
-            if(fileObj) {
-                formData.append('photo', fileObj);
-            }
+                fetch('proxy.php', { method: 'POST', body: formData })
+                .then(res => res.text())
+                .then(txt => {
+                    alert("Bukti berhasil dikirim! Mohon tunggu konfirmasi admin.");
+                    btn.innerText = "TERKIRIM ✅";
+                })
+                .catch(err => {
+                    alert("Gagal mengirim bukti.");
+                    btn.innerText = "KIRIM BUKTI";
+                    btn.disabled = false;
+                });
 
-            // Kirim ke Proxy PHP
-            await fetch('proxy.php', {
-                method: 'POST',
-                body: formData
-            });
-        }
-
-        function startTimer() {
-            let sec = 300;
-            const el = document.getElementById('timerDisplay');
-            clearInterval(timerInterval);
-            timerInterval = setInterval(() => {
-                sec--;
-                let m = Math.floor(sec/60);
-                let s = sec%60;
-                el.innerText = `${m}:${s<10?'0'+s:s}`;
-                if(sec<=0) {
-                    clearInterval(timerInterval);
-                    alert("Waktu habis");
-                    closeOverlay();
-                }
-            }, 1000);
-        }
-
-        window.closeOverlay = () => {
-            document.getElementById('mainOverlay').style.display = 'none';
-            clearInterval(timerInterval);
+            }, { onlyOnce: true });
         }
     </script>
 </body>
